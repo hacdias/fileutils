@@ -3,6 +3,7 @@ package fileutils
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 )
@@ -49,5 +50,24 @@ func TestCopyDir(t *testing.T) {
 	_, err = os.Stat(filepath.Join(folder, "everest.txt"))
 	if err != nil && err == os.ErrNotExist {
 		t.Error(err)
+	}
+}
+
+
+func TestCopyALotOfDirs(t *testing.T) {
+	tempdir, err := ioutil.TempDir("", "")
+	if err != nil {
+		t.Error(err)
+	}
+	defer os.RemoveAll(tempdir)
+	folder := filepath.Join(tempdir, "")
+
+	for i := 0; i < 5000; i++ {
+		go func () {
+			CopyDir("./testdata/hero", path.Join(folder, "ok"))
+		}()
+		go func () {
+			CopyDir("./testdata/mountain", path.Join(folder, "ok1"))
+		}()
 	}
 }
